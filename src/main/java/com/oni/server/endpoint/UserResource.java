@@ -1,0 +1,106 @@
+package com.oni.server.endpoint;
+
+import java.util.List;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.oni.server.model.impl.User;
+import com.oni.server.model.impl.Users;
+import com.oni.server.service.UserService;
+
+import io.swagger.annotations.Api;
+
+@RestController
+@RequestMapping("/api")
+@Api(value = "/api", description = " It will provide API for CRUD operatings for User details")
+@CrossOrigin(origins = "*")
+public class UserResource {
+
+	Logger logger = LoggerFactory.getLogger(UserResource.class);
+
+	@Autowired
+	UserService userService;
+
+	@GetMapping("/greeting")
+	public String greeting() {
+		return "Hello, User";
+	}
+
+	@GetMapping("/user/one")
+	public ResponseEntity<User> find() {
+
+		User user = null;
+		List<User> userList = userService.findAll();
+
+		if (userList == null || userList.isEmpty()) {
+			user = null;
+		} else {
+			user = userList.get(0);
+		}
+
+		return new ResponseEntity<User>(user, HttpStatus.OK);
+	}
+
+	@GetMapping("/user/{userId}")
+	public ResponseEntity<User> find(@PathVariable Integer userId) {
+		User user = userService.findById(userId);
+		return new ResponseEntity<User>(user, HttpStatus.OK);
+	}
+
+	@GetMapping("/user")
+	public ResponseEntity<Users> finAll() {		
+		Users users = new Users(userService.findAll());
+		return new ResponseEntity<Users>(users, HttpStatus.OK);
+	}
+
+	@PostMapping("/user")
+	public ResponseEntity<User> save(@RequestBody User user) {
+		User userValue = userService.save(user);
+		return new ResponseEntity<User>(userValue, HttpStatus.CREATED);
+	}
+
+	@PutMapping("/user/{userId}")
+	public ResponseEntity<User> update(@PathVariable int userId, @RequestBody User user) {
+
+		User userValue = null;
+		if (userId == user.getUserId()) {
+			userValue = userService.save(user);
+		} else {
+			throw new IllegalArgumentException("userId = " + " does not match with object userId " + user.getUserId());
+		}
+		return new ResponseEntity<User>(userValue, HttpStatus.CREATED);
+
+	}
+
+	@DeleteMapping("/user/{userId}")
+	public ResponseEntity<String> delete(@PathVariable int userId) {
+		userService.delete(userId);
+		return new ResponseEntity<String>("User with userId=" + userId + " is deleted successfully", HttpStatus.OK);
+	}
+
+	@DeleteMapping("/user")
+	public ResponseEntity<String> deleteAll() {
+		userService.deleteAll();
+		return new ResponseEntity<String>("All User in database are deleted successfully", HttpStatus.OK);
+	}
+
+	@GetMapping("/user/count")
+	public ResponseEntity<Long> count() {
+		Long count = userService.countAll();
+		return new ResponseEntity<Long>(count, HttpStatus.OK);
+	}
+
+}

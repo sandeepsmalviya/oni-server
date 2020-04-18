@@ -1,0 +1,10 @@
+Manifest-Version: 1.0
+Implementation-Title: oni-server
+Implementation-Version: 0.0.1-SNAPSHOT
+Built-By: aarti
+Implementation-Vendor-Id: com.oni.server
+Build-Jdk: 1.8.0_45
+Implementation-URL: https://projects.spring.io/spring-boot/#/spring-bo
+ ot-starter-parent/oni-server
+Created-By: Maven Integration for Eclipse
+
