@@ -16,8 +16,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.oni.server.model.UserModel;
-import com.oni.server.model.impl.User;
+import com.oni.server.model.User;
 import com.oni.server.service.FileReadingService;
 
 import io.swagger.annotations.Api;
@@ -32,16 +31,16 @@ import io.swagger.annotations.ApiResponses;
 public class UploadFileResource {
 
 	private static final Logger logger = LoggerFactory.getLogger(UploadFileResource.class);
-	
+
 	@Autowired
 	private FileReadingService fileReadingService;
 
 //	@ApiIgnore
-	@ApiOperation(value = "Upload the excel file, process it and save its contents to database", notes = "Upload the excel file, process it and save its contents to database", response = UserModel.class)
+	@ApiOperation(value = "Upload the excel file, process it and save its contents to database", notes = "Upload the excel file, process it and save its contents to database", response = User.class)
 	@ApiResponses(value = { @ApiResponse(code = 200, message = "SUCCESS"),
 			@ApiResponse(code = 400, message = "Invalid Data supplied"),
 			@ApiResponse(code = 404, message = "No data found"),
-			@ApiResponse(code = 500, message = "Interal processing error")})
+			@ApiResponse(code = 500, message = "Interal processing error") })
 	@PostMapping("/excel-upload")
 	public ResponseEntity<List<User>> uploadPdfFile(@RequestParam("file") MultipartFile pdfFile)
 			throws InstantiationException, IllegalAccessException, IOException, ParseException {

@@ -21,40 +21,46 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.oni.server.model.impl.PersonalDetails.Gender;
-import com.oni.server.model.impl.User;
+import com.oni.server.model.PersonalDetails.Gender;
+import com.oni.server.model.User;
 import com.oni.server.repository.UserRepository;
 
 @Service
 public class ApachePOIExcelReaderUtil {
 
 	private static Logger logger = LoggerFactory.getLogger(ApachePOIExcelReaderUtil.class);
-	private static final String FILE_NAME = "/home/aarti/Desktop/oni-server/src/main/resources/Oni-Register-Book-040519.xlsx";
+	public static final String FILE_NAME = "/home/aarti/Development/projects/oni_applications/oni-server/src/main/resources/Oni-Register-Book-040519.xlsx";
 
 	@Autowired
-	UserRepository userRepository;
+	private UserRepository userRepository;
+//
+//	public static void main(String[] args) throws IOException {
+//
+//		ApachePOIExcelReaderUtil readerUtil = new ApachePOIExcelReaderUtil();
+//		readerUtil.reloadExcelData();
+//	}
 
-	public static void main(String[] args) throws IOException {
+	public void reloadExcelData() throws IOException {
 
 		FileInputStream excelFileInputStream = new FileInputStream(new File(FILE_NAME));
-		ApachePOIExcelReaderUtil excelReaderUtil = new ApachePOIExcelReaderUtil();
-		excelReaderUtil.processExcelFile(excelFileInputStream);
+		this.processExcelFile(excelFileInputStream);
 
 	}
 
 	public List<User> processExcelFile(InputStream excelFileInputStream) throws IOException {
 
-		logger.info("Processing Excel Row File ...  ");
+		logger.info("Processing Excel Row File from path...  "+ FILE_NAME );
 		List<User> list = this.parseExcelFile(excelFileInputStream);
-		logger.info("Saving user list data to database ...  ");
+		logger.info("Total number of records extracted from excel file =" + (list == null ? "null" : list.size()));
+		logger.debug("Excel file proocessing is successful");
+		logger.debug("Trying to insert records into the database ...");
 		saveToDatabase(list);
-		
-		
+
 		// Java object to JSON string
 //		ObjectMapper mapper = new ObjectMapper();
 //		String jsonString = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(user);
 //		System.out.println(jsonString);
-		
+
 		return list;
 
 	}
@@ -70,14 +76,15 @@ public class ApachePOIExcelReaderUtil {
 		Workbook workbook = new XSSFWorkbook(excelFileInputStream);
 		Sheet datatypeSheet = workbook.getSheetAt(2);
 		Iterator<Row> rowIterator = datatypeSheet.iterator();
-		
+
 		while (rowIterator.hasNext()) {
 
 			Row currentRow = rowIterator.next();
 			if (currentRow.getRowNum() < 3) {
 				continue;
 			}
-			logger.debug("Processing Excel Row Number = " + (currentRow.getRowNum() + 1));
+			// logger.debug("Processing Excel Row Number = " + (currentRow.getRowNum() +
+			// 1));
 			User user = procesCurrentRow(currentRow);
 
 			if (user == null) {
@@ -93,7 +100,7 @@ public class ApachePOIExcelReaderUtil {
 
 	private User procesCurrentRow(Row currentRow) {
 		User user = User.createEmptyUser();
-		
+
 		Iterator<Cell> cellIterator = currentRow.iterator();
 
 		while (cellIterator.hasNext()) {
@@ -112,7 +119,7 @@ public class ApachePOIExcelReaderUtil {
 			}
 
 			try {
-				
+
 				ProcessMessage processMessage = fillCellDataToObject(currentRow, columnIndex, cellValue, user);
 				if (processMessage == ProcessMessage.SKIP_THIIS_ROW) {
 					user = null;
@@ -120,7 +127,7 @@ public class ApachePOIExcelReaderUtil {
 				}
 
 			} catch (Exception exception) {
-				
+
 				logger.info("Processing rowIndex=" + currentRow.getRowNum() + " " + "columnIndex = " + columnIndex
 						+ "   cellValue=" + cellValue);
 				exception.printStackTrace();

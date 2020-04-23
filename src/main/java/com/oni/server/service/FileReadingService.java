@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 
-import com.oni.server.model.impl.User;
+import com.oni.server.model.User;
 
 public interface FileReadingService {
 
