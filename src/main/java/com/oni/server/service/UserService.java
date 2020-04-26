@@ -13,6 +13,7 @@ import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
+import com.oni.server.constants.OniServerConstants;
 import com.oni.server.model.User;
 import com.oni.server.repository.UserRepository;
 
@@ -29,7 +30,7 @@ public class UserService {
 		return userRepository.save(user);
 	}
 
-	@CachePut(value = "user-cache", key = "#userId")
+	@CachePut(value = OniServerConstants.CACHE_NAME, key = "#userId")
 	public User update(int userId, User user) {
 
 		User userValue = null;
@@ -48,7 +49,7 @@ public class UserService {
 		return userValue;
 	}
 
-	@CacheEvict(value = "user-cache", key = "#userId")
+	@CacheEvict(value = OniServerConstants.CACHE_NAME, key = "#userId")
 	public void delete(int userId) {
 		logger.debug("delete is called for userId=" + userId);
 		userRepository.deleteById(userId);
@@ -70,7 +71,7 @@ public class UserService {
 		return userRepository.findAll();
 	}
 
-	@Cacheable(value = "user-cache", key = "#userId")
+	@Cacheable(value = OniServerConstants.CACHE_NAME, key = "#userId")
 	public User findById(Integer userId) {
 
 		logger.debug("findById with userId = " + userId + "  is called");
@@ -87,9 +88,10 @@ public class UserService {
 			return this.findAll().get(0);
 		}
 	}
+
 	@CacheEvict(value = "user-cache")
 	public void clearUserCache() {
-		
+
 	}
 
 }

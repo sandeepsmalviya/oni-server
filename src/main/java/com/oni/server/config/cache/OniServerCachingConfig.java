@@ -8,6 +8,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 
+import com.oni.server.constants.OniServerConstants;
+
 import net.sf.ehcache.Cache;
 import net.sf.ehcache.config.CacheConfiguration;
 
@@ -38,34 +40,32 @@ public class OniServerCachingConfig {
 //		cacheManager().getObject().addCache(myEhCache);
 //		return new EhCacheCacheManager(cacheManager().getObject());
 //	}
-	
-	
+
 	@Bean
 	@Primary
 	public CacheManager oniServerEhCacheCacheManager() {
 		// testEhCache Configuration - create configuration of cache that previous
 		// required XML
-		CacheConfiguration userEhCacheConfig = new CacheConfiguration()
-				.eternal(false) // if true, timeouts are ignored
-				.timeToIdleSeconds(30) // time since last accessed before item is marked for removal
+		CacheConfiguration userEhCacheConfig = new CacheConfiguration().eternal(false) // if true, timeouts are ignored
+				// .timeToIdleSeconds(30) // time since last accessed before item is marked for
+				// removal
 				.timeToLiveSeconds(60) // time since inserted before item is marked for removal
 				.maxEntriesLocalHeap(100) // total items that can be stored in cache
-				.memoryStoreEvictionPolicy("LRU") // eviction policy for when items exceed cache. LRU = Least Recently
-													// Used
-				.name("user-cache");
+				.memoryStoreEvictionPolicy(OniServerConstants.CACHE_POLICY) // eviction policy for when items exceed
+																			// cache. LRU = Least Recently
+				// Used
+				.name(OniServerConstants.CACHE_NAME);
 
-		
-		CacheConfiguration myEhCacheConfig = new CacheConfiguration()
-				.eternal(false) // if true, timeouts are ignored
-				.timeToIdleSeconds(30) // time since last accessed before item is marked for removal
+		CacheConfiguration myEhCacheConfig = new CacheConfiguration().eternal(false) // if true, timeouts are ignored
+				// .timeToIdleSeconds(30) // time since last accessed before item is marked for
+				// removal
 				.timeToLiveSeconds(60) // time since inserted before item is marked for removal
 				.maxEntriesLocalHeap(100) // total items that can be stored in cache
-				.memoryStoreEvictionPolicy("LRU") // eviction policy for when items exceed cache. LRU = Least Recently
-													// Used
-				.name("my-cache");
+				.memoryStoreEvictionPolicy(OniServerConstants.CACHE_POLICY) // eviction policy for when items exceed
+																			// cache. LRU = Least Recently
+				// Used
+				.name(OniServerConstants.MY_CACHE_NAME);
 
-		
-		
 		Cache userEhCache = new Cache(userEhCacheConfig);
 		Cache myEhCache = new Cache(myEhCacheConfig);
 
@@ -74,7 +74,6 @@ public class OniServerCachingConfig {
 		return new EhCacheCacheManager(cacheManager().getObject());
 	}
 
-	
 //	@Bean	
 //	public CacheManager myEhCacheCacheManager() {
 //		// testEhCache Configuration - create configuration of cache that previous
@@ -108,5 +107,4 @@ public class OniServerCachingConfig {
 //		return new EhCacheCacheManager(cacheManager().getObject());
 //	}
 
-	
 }
